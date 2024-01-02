@@ -1,0 +1,48 @@
+
+
+# Common configuration
+server:
+  port: 8092
+
+spring:
+  profiles:
+    active: dev
+
+---
+# Dev profile
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+spring:
+  security:
+    user:
+      name: martin
+      password: martin
+      roles: ADMIN
+  config:
+    activate:
+      on-profile: dev
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: sushidb
+
+
+---
+# Production profile
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+spring:
+  config:
+    activate:
+      on-profile: production
+  data:
+    mongodb:
+      uri: mongodb+srv://emqarani:Newsurtur17@cluster0.qddeiru.mongodb.net/PeerInterview
+      database: sushidb
