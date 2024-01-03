@@ -3,6 +3,8 @@ package shushi.cart.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import shushi.cart.dto.NewCartDto;
+import shushi.cart.dto.NewItemDto;
 import shushi.cart.entity.CartEntity;
 import shushi.cart.entity.CartItem;
 import shushi.cart.service.CartService;
@@ -14,24 +16,23 @@ public class CartController {
     @Autowired
     private CartService cartService;
 
-    // Endpoint to create a new cart
     @PostMapping("/create")
-    public ResponseEntity<CartEntity> createCart() {
-        CartEntity cart = cartService.createCart();
+    public ResponseEntity<CartEntity> createCart(@RequestBody NewCartDto newCart) {
+        CartEntity cart = cartService.createCart(newCart);
         return ResponseEntity.ok(cart);
     }
 
     // Endpoint to add an item to the cart
-    @PostMapping("/{cartId}/addItem")
-    public ResponseEntity<CartEntity> addItemToCart(@PathVariable String cartId, @RequestBody CartItem item) {
-        CartEntity updatedCart = cartService.addItemToCart(cartId, item);
+    @PostMapping("/addItem/{userId}")
+    public ResponseEntity<CartEntity> addItemToCart(@PathVariable String userId, @RequestBody String itemId) {
+        CartEntity updatedCart = cartService.addItemToCart(userId, itemId);
         return ResponseEntity.ok(updatedCart);
     }
 
     // Endpoint to remove an item from the cart
-    @PostMapping("/{cartId}/removeItem")
-    public ResponseEntity<CartEntity> removeItemFromCart(@PathVariable String cartId, @RequestBody CartItem item) {
-        CartEntity updatedCart = cartService.removeItemFromCart(cartId, item);
+    @PostMapping("/removeItem/{cartId}")
+    public ResponseEntity<CartEntity> removeItemFromCart(@PathVariable String userId, @RequestBody String itemId) {
+        CartEntity updatedCart = cartService.removeItemFromCart(userId, itemId);
         return ResponseEntity.ok(updatedCart);
     }
 
@@ -45,9 +46,29 @@ public class CartController {
 
 
     // Endpoint to clear the contents of the cart
-    @PostMapping("/{cartId}/clear")
-    public ResponseEntity<Void> clearCart(@PathVariable String cartId) {
-        cartService.clearCart(cartId);
+    @PostMapping("/clear-cart/{userId}")
+    public ResponseEntity<Void> clearCart(@PathVariable String userId) {
+        cartService.clearCart(userId);
         return ResponseEntity.ok().build();
     }
+
+
+    @GetMapping("/numberOfItems/{userId}")
+    public ResponseEntity<Integer> getNumberOfItemsInCart(@PathVariable String userId) {
+        int numberOfItems = cartService.getNumberOfItemsInCart(userId);
+        return ResponseEntity.ok(numberOfItems);
+    }
+
+    @PostMapping("/increaseQuantity/{userId}")
+    public ResponseEntity<CartEntity> increaseQuantity(@PathVariable String userId, @RequestBody String itemId) {
+        CartEntity updatedCart = cartService.increaseQuantity(userId, itemId);
+        return ResponseEntity.ok(updatedCart);
+    }
+
+    @PostMapping("/reduceQuantity/{userId}")
+    public ResponseEntity<CartEntity> reduceQuantity(@PathVariable String userId, @RequestBody String itemId) {
+        CartEntity updatedCart = cartService.reduceQuantity(userId, itemId);
+        return ResponseEntity.ok(updatedCart);
+    }
+
 }

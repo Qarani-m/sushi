@@ -9,6 +9,6 @@ import shushi.cart.entity.CartEntity;
 @Repository
 public interface CartRepository extends MongoRepository<CartEntity, String> {
 
-    CartEntity findByUser(UserProfile user);
+    CartEntity findByUserId(String userId);
 
 }

@@ -4,12 +4,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import shushi.auth.entity.UserProfile;
 import shushi.auth.repository.UserRepository;
+import shushi.cart.dto.NewCartDto;
+import shushi.cart.dto.NewItemDto;
 import shushi.cart.entity.CartEntity;
 import shushi.cart.entity.CartItem;
 import shushi.cart.repository.CartRepository;
 import shushi.exceptions.UserNotFoundException;
+import shushi.sushi.entity.SushiEntity;
+import shushi.sushi.repository.SushiRepository;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -22,50 +27,55 @@ public class CartServiceImpl implements CartService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private SushiRepository sushiRepository;
+
     @Override
-    public CartEntity addItemToCart(String userId, CartItem item) {
+    public CartEntity addItemToCart(String userId, String itemId) {
         Objects.requireNonNull(userId, "UserId cannot be null");
-        Objects.requireNonNull(item, "CartItem cannot be null");
-        Optional<UserProfile> userOptional = findUser(userId);
-        UserProfile user = userOptional.orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
-        CartEntity cart = cartRepository.findByUser(user);
-        if (cart == null) {
-            cart = new CartEntity();
-//            cart.setUser(user);
-        }
-        if (cart.getItems() == null) {
-            cart.setItems(new ArrayList<>());
-        }
-        cart.getItems().add(item);
-        return cartRepository.save(cart);
+        Objects.requireNonNull(itemId, "CartItem cannot be null");
+        CartEntity cartEntity =cartRepository.findByUserId( userId);
+        List<CartItem> existingItems = cartEntity.getItems();
+
+        SushiEntity sushiItem = sushiRepository.findById(itemId).get();
+        CartItem cartItem = CartItem.builder()
+                .sushi(sushiItem)
+                .quantity(1)
+                .build();
+        existingItems.add(cartItem);
+        cartEntity.setItems(existingItems);
+        return cartRepository.save(cartEntity);
     }
 
 
 
 
     @Override
-    public CartEntity removeItemFromCart(String userId, CartItem item) {
+    public CartEntity removeItemFromCart(String userId, String itemId) {
         Objects.requireNonNull(userId, "UserId cannot be null");
-        Objects.requireNonNull(item, "CartItem cannot be null");
-        UserProfile user = findUser(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
-        CartEntity cart = cartRepository.findByUser(user);
-        if (cart != null && cart.getItems() != null) {
-            cart.getItems().remove(item);
-            return cartRepository.save(cart);
-        }
-        return cart;
+        Objects.requireNonNull(itemId, "ItemId cannot be null");
+
+        CartEntity cartEntity = cartRepository.findByUserId(userId);
+        List<CartItem> existingItems = cartEntity.getItems();
+        Optional<CartItem> itemToRemove = existingItems.stream()
+                .filter(cartItem -> cartItem.getSushi().getId().equals(itemId))
+                .findFirst();
+        itemToRemove.ifPresent(existingItems::remove);
+
+        cartEntity.setItems(existingItems);
+
+        return cartRepository.save(cartEntity);
     }
+
 
 
     @Override
     public CartEntity getCart(String userId) {
         Objects.requireNonNull(userId, "UserId cannot be null");
 
-        UserProfile user = findUser(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
+        UserProfile user = findUser(userId).orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
 
-        return cartRepository.findByUser(user);
+        return cartRepository.findByUserId(user.getId());
     }
     @Override
     public void clearCart(String userId) {
@@ -74,16 +84,19 @@ public class CartServiceImpl implements CartService {
         UserProfile user = findUser(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
 
-        CartEntity cart = cartRepository.findByUser(user);
+        CartEntity cart = cartRepository.findByUserId(user.getId());
 
         if (cart != null) {
             cart.setItems(new ArrayList<>()); // Clear the items in the cart
             cartRepository.save(cart);
         }
     }
-
-    public CartEntity createCart() {
-        CartEntity cart = new CartEntity();
+    @Override
+    public CartEntity createCart(NewCartDto newCartDto) {
+        CartEntity cart = CartEntity.builder()
+                .items(new ArrayList<>())
+                .userId(newCartDto.getUserId())
+                .build();
         return cartRepository.save(cart);
     }
 
@@ -92,5 +105,54 @@ public class CartServiceImpl implements CartService {
         Objects.requireNonNull(userId, "User ID cannot be null");
         return userRepository.findById(userId);
     }
-}
+    @Override
+    public int getNumberOfItemsInCart(String userId) {
+        Objects.requireNonNull(userId, "UserId cannot be null");
+        CartEntity cartEntity = cartRepository.findByUserId(userId);
 
+        if (cartEntity != null) {
+            List<CartItem> items = cartEntity.getItems();
+            return items.size();
+        } else {
+            return 0;
+        }
+    }
+
+
+        public CartEntity increaseQuantity(String userId, String itemId) {
+            Objects.requireNonNull(userId, "UserId cannot be null");
+            Objects.requireNonNull(itemId, "ItemId cannot be null");
+
+            CartEntity cartEntity = cartRepository.findByUserId(userId);
+            List<CartItem> existingItems = cartEntity.getItems();
+
+            Optional<CartItem> itemToIncrease = existingItems.stream()
+                    .filter(cartItem -> cartItem.getSushi().getId().equals(itemId))
+                    .findFirst();
+
+            itemToIncrease.ifPresent(cartItem -> cartItem.setQuantity(cartItem.getQuantity() + 1));
+
+            cartEntity.setItems(existingItems);
+
+            return cartRepository.save(cartEntity);
+        }
+
+        public CartEntity reduceQuantity(String userId, String itemId) {
+            Objects.requireNonNull(userId, "UserId cannot be null");
+            Objects.requireNonNull(itemId, "ItemId cannot be null");
+            CartEntity cartEntity = cartRepository.findByUserId(userId);
+            List<CartItem> existingItems = cartEntity.getItems();
+            Optional<CartItem> itemToReduce = existingItems.stream()
+                    .filter(cartItem -> cartItem.getSushi().getId().equals(itemId))
+                    .findFirst();
+            itemToReduce.ifPresent(cartItem -> {
+                if (cartItem.getQuantity() > 1) {
+                    cartItem.setQuantity(cartItem.getQuantity() - 1);
+                } else {
+                    existingItems.remove(cartItem);
+                }
+            });
+            cartEntity.setItems(existingItems);
+            return cartRepository.save(cartEntity);
+        }
+    }
