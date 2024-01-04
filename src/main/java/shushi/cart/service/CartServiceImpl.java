@@ -73,18 +73,16 @@ public class CartServiceImpl implements CartService {
     public CartEntity getCart(String userId) {
         Objects.requireNonNull(userId, "UserId cannot be null");
 
-        UserProfile user = findUser(userId).orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
 
-        return cartRepository.findByUserId(user.getId());
+        return cartRepository.findByUserId(userId);
     }
     @Override
     public void clearCart(String userId) {
         Objects.requireNonNull(userId, "UserId cannot be null");
 
-        UserProfile user = findUser(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
 
-        CartEntity cart = cartRepository.findByUserId(user.getId());
+
+        CartEntity cart = cartRepository.findByUserId(userId);
 
         if (cart != null) {
             cart.setItems(new ArrayList<>()); // Clear the items in the cart

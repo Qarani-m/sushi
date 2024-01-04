@@ -3,6 +3,7 @@ package shushi.cart.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import shushi.cart.dto.AddItemDto;
 import shushi.cart.dto.NewCartDto;
 import shushi.cart.dto.NewItemDto;
 import shushi.cart.entity.CartEntity;
@@ -24,32 +25,31 @@ public class CartController {
 
     // Endpoint to add an item to the cart
     @PostMapping("/addItem/{userId}")
-    public ResponseEntity<CartEntity> addItemToCart(@PathVariable String userId, @RequestBody String itemId) {
-        CartEntity updatedCart = cartService.addItemToCart(userId, itemId);
+    public ResponseEntity<CartEntity> addItemToCart(@PathVariable String userId, @RequestBody AddItemDto itemIdDto) {
+        CartEntity updatedCart = cartService.addItemToCart(userId, itemIdDto.getItemId());
         return ResponseEntity.ok(updatedCart);
     }
 
     // Endpoint to remove an item from the cart
-    @PostMapping("/removeItem/{cartId}")
-    public ResponseEntity<CartEntity> removeItemFromCart(@PathVariable String userId, @RequestBody String itemId) {
-        CartEntity updatedCart = cartService.removeItemFromCart(userId, itemId);
+    @PostMapping("/removeItem/{userId}")
+    public ResponseEntity<CartEntity> removeItemFromCart(@PathVariable String userId, @RequestBody AddItemDto itemIdDto) {
+        CartEntity updatedCart = cartService.removeItemFromCart(userId, itemIdDto.getItemId());
         return ResponseEntity.ok(updatedCart);
     }
 
     // Endpoint to get the contents of the cart
-    @GetMapping("/{cartId}")
-    public ResponseEntity<CartEntity> getCart(@PathVariable String cartId) {
-        CartEntity cart = cartService.getCart(cartId);
+    @GetMapping("/all/{userId}")
+    public ResponseEntity<CartEntity> getCart(@PathVariable String userId) {
+        CartEntity cart = cartService.getCart(userId);
         return ResponseEntity.ok(cart);
     }
 
 
-
     // Endpoint to clear the contents of the cart
-    @PostMapping("/clear-cart/{userId}")
+    @GetMapping("/clear-cart/{userId}")
     public ResponseEntity<Void> clearCart(@PathVariable String userId) {
         cartService.clearCart(userId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
 

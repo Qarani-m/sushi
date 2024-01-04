@@ -48,6 +48,7 @@ public class SushiServiceImpl implements SushiService{
 
 
     public List<SushiEntity> filterSushi(Double minPrice, Double maxPrice, String category, Integer stars) {
+        System.out.println(minPrice +"__"+maxPrice+"__"+ category+"__"+stars);
         return sushiRepository.findByPriceBetweenAndCategoryAndStars(
                 minPrice != null ? minPrice : 0,
                 maxPrice != null ? maxPrice : Double.MAX_VALUE,
