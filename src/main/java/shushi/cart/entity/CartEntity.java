@@ -23,6 +23,5 @@ public class CartEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private String id;
     private List<CartItem> items = new ArrayList<>();
-
     private String userId;
 }

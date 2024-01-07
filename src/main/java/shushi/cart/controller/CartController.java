@@ -60,14 +60,14 @@ public class CartController {
     }
 
     @PostMapping("/increaseQuantity/{userId}")
-    public ResponseEntity<CartEntity> increaseQuantity(@PathVariable String userId, @RequestBody String itemId) {
-        CartEntity updatedCart = cartService.increaseQuantity(userId, itemId);
+    public ResponseEntity<CartEntity> increaseQuantity(@PathVariable String userId, @RequestBody AddItemDto addItemDto) {
+        CartEntity updatedCart = cartService.increaseQuantity(userId, addItemDto.getItemId());
         return ResponseEntity.ok(updatedCart);
     }
 
     @PostMapping("/reduceQuantity/{userId}")
-    public ResponseEntity<CartEntity> reduceQuantity(@PathVariable String userId, @RequestBody String itemId) {
-        CartEntity updatedCart = cartService.reduceQuantity(userId, itemId);
+    public ResponseEntity<CartEntity> reduceQuantity(@PathVariable String userId, @RequestBody AddItemDto addItemDto) {
+        CartEntity updatedCart = cartService.reduceQuantity(userId, addItemDto.getItemId());
         return ResponseEntity.ok(updatedCart);
     }
 

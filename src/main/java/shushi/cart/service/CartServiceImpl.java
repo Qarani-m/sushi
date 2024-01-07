@@ -34,19 +34,29 @@ public class CartServiceImpl implements CartService {
     public CartEntity addItemToCart(String userId, String itemId) {
         Objects.requireNonNull(userId, "UserId cannot be null");
         Objects.requireNonNull(itemId, "CartItem cannot be null");
-        CartEntity cartEntity =cartRepository.findByUserId( userId);
+
+        CartEntity cartEntity = cartRepository.findByUserId(userId);
         List<CartItem> existingItems = cartEntity.getItems();
 
-        SushiEntity sushiItem = sushiRepository.findById(itemId).get();
-        CartItem cartItem = CartItem.builder()
-                .sushi(sushiItem)
-                .quantity(1)
-                .build();
-        existingItems.add(cartItem);
-        cartEntity.setItems(existingItems);
-        return cartRepository.save(cartEntity);
-    }
+        Optional<CartItem> existingCartItem = existingItems.stream()
+                .filter(item -> item.getSushi().getId().equals(itemId))
+                .findFirst();
 
+        if (existingCartItem.isPresent()) {
+            increaseQuantity(userId, itemId);
+        } else {
+            SushiEntity sushiItem = sushiRepository.findById(itemId).orElseThrow();
+            CartItem cartItem = CartItem.builder()
+                    .sushi(sushiItem)
+                    .quantity(1)
+                    .build();
+            existingItems.add(cartItem);
+            cartEntity.setItems(existingItems);
+            cartRepository.save(cartEntity);
+        }
+
+        return cartEntity;
+    }
 
 
 
@@ -118,15 +128,17 @@ public class CartServiceImpl implements CartService {
 
 
         public CartEntity increaseQuantity(String userId, String itemId) {
-            Objects.requireNonNull(userId, "UserId cannot be null");
-            Objects.requireNonNull(itemId, "ItemId cannot be null");
-
             CartEntity cartEntity = cartRepository.findByUserId(userId);
             List<CartItem> existingItems = cartEntity.getItems();
 
             Optional<CartItem> itemToIncrease = existingItems.stream()
                     .filter(cartItem -> cartItem.getSushi().getId().equals(itemId))
                     .findFirst();
+
+            System.out.println(itemToIncrease);
+
+
+
 
             itemToIncrease.ifPresent(cartItem -> cartItem.setQuantity(cartItem.getQuantity() + 1));
 
