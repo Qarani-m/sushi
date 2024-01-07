@@ -21,7 +21,7 @@ public class FeedbackEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private String id;
     private String userId;
-    private String shushiId;
+    private String sushiId;
     private int rating;
     private String comment;
     private String createdAt;

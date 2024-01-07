@@ -9,6 +9,6 @@ import java.util.List;
 
 @Repository
 public interface FeedbackRepository extends MongoRepository<FeedbackEntity, String> {
-    List<FeedbackEntity> getFeedbackByShushiId(String shushiId);
+    List<FeedbackEntity> getFeedbackBySushiId(String shushiId);
 
 }

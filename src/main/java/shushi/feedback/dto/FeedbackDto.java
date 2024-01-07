@@ -14,6 +14,6 @@ import shushi.feedback.entity.FeedbackEntity;
 public class FeedbackDto {
     private String userId;
     private int rating;
-    private String shushiId;
+    private String sushiId;
     private String comment;
 }

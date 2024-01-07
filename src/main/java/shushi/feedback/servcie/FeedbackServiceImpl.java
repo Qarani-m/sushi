@@ -7,39 +7,68 @@ import shushi.feedback.entity.FeedbackEntity;
 import shushi.feedback.repository.FeedbackRepository;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class FeedbackServiceImpl implements FeedbackService{
     @Autowired
     private FeedbackRepository feedbackRepository;
     @Override
-    public List<FeedbackEntity> getAllFeedback(String shushiId) {
-        return feedbackRepository.getFeedbackByShushiId(shushiId);
+    public Map<String, Object> getAllFeedback(String sushiId) {
+        Map<String, Object> response = new HashMap<>();
+        List<FeedbackEntity> feedbackList = feedbackRepository.getFeedbackBySushiId(sushiId);
+
+        if (!feedbackList.isEmpty()) {
+            response.put("feedbackList", feedbackList);
+            response.put("message", "success");
+        } else {
+            response.put("feedbackList", null);
+            response.put("message", "No feedback found for the given sushiId.");
+        }
+
+        return response;
+    }
+
+
+    @Override
+    public Map<String, Object> getFeedbackById(String id) {
+        Map<String, Object> response = new HashMap<>();
+        Optional<FeedbackEntity> optionalFeedback = feedbackRepository.findById(id);
+
+        if (optionalFeedback.isPresent()) {
+            response.put("feedback", optionalFeedback.get());
+            response.put("message", "success");
+        } else {
+            response.put("feedback", null);
+            response.put("message", "Feedback not found.");
+        }
+
+        return response;
     }
 
     @Override
-    public FeedbackEntity getFeedbackById(String id) {
-        Optional<FeedbackEntity> optionalFeedback = feedbackRepository.findById(id);
-        return optionalFeedback.orElse(null);
-    }
-    @Override
-    public FeedbackEntity createFeedback(FeedbackDto feedback) {
-        if (feedback != null) {
+    public Map<String, Object> createFeedback(FeedbackDto feedbackDto) {
+        Map<String, Object> response = new HashMap<>();
+
+        if (feedbackDto != null) {
             FeedbackEntity feedbackEntity = FeedbackEntity.builder()
-                    .userId(feedback.getUserId())
-                    .rating(feedback.getRating())
-                    .comment(feedback.getComment())
-                    .shushiId(feedback.getShushiId())
+                    .userId(feedbackDto.getUserId())
+                    .rating(feedbackDto.getRating())
+                    .comment(feedbackDto.getComment())
+                    .sushiId(feedbackDto.getSushiId())
                     .createdAt(new Date().toString())
                     .build();
-            return feedbackRepository.save(feedbackEntity);
+
+            FeedbackEntity createdFeedback = feedbackRepository.save(feedbackEntity);
+            response.put("createdFeedback", createdFeedback);
+            response.put("message", "success");
         } else {
-            throw new IllegalArgumentException("Feedback cannot be null");
+            response.put("createdFeedback", null);
+            response.put("message", "Feedback cannot be null.");
         }
+
+        return response;
     }
+
 
 }

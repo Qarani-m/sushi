@@ -1,20 +1,22 @@
 package shushi.sushi.service;
 
+import shushi.sushi.dto.SushiDto;
 import shushi.sushi.entity.SushiEntity;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface SushiService {
-    List<SushiEntity> findAll();
+    Map<String, Object> findAll();
 
-    Optional<SushiEntity> getSushiById(String sushiId);
+    Map<String, Object> getSushiById(String sushiId);
 
-    Optional<SushiEntity> updateSushi(String sushiId, SushiEntity updatedSushi);
+    Map<String, Object> updateSushi(String sushiId, SushiEntity updatedSushi);
 
-    SushiEntity createSushi(SushiEntity sushiEntity);
+    Map<String, Object>  createSushi(SushiDto sushiDto);
 
-    boolean deleteSushi(String sushiId);
+    Map<String, Object>  deleteSushi(String sushiId);
 
-    List<SushiEntity> filterSushi(Double minPrice, Double maxPrice, String category, Integer stars);
+    Map<String, Object> filterSushi(Double minPrice, Double maxPrice, String category, Integer stars);
 }

@@ -9,7 +9,9 @@ import shushi.feedback.dto.FeedbackDto;
 import shushi.feedback.entity.FeedbackEntity;
 import shushi.feedback.servcie.FeedbackService;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/feedback")
@@ -18,23 +20,41 @@ public class FeedbackController {
     @Autowired
     private FeedbackService feedbackService;
     // Get all feedback
-    @GetMapping("all/{productId}")
-    public ResponseEntity<List<FeedbackEntity>> getAllFeedback(@PathVariable String productId) {
-        List<FeedbackEntity> feedbackList = feedbackService.getAllFeedback(productId);
-        return new ResponseEntity<>(feedbackList, HttpStatus.OK);
+    @GetMapping("/all/{productId}")
+    public ResponseEntity<Map<String, Object>> getAllFeedback(@PathVariable String productId) {
+        Map<String, Object> feedbackResult = feedbackService.getAllFeedback(productId);
+
+        if (feedbackResult.get("feedbackList") != null && !((List<?>) feedbackResult.get("feedbackList")).isEmpty()) {
+            return ResponseEntity.ok(feedbackResult);
+        } else {
+            return ResponseEntity.noContent().build();
+        }
     }
+
     // Get feedback by ID
     @GetMapping("/one/{id}")
-    public ResponseEntity<FeedbackEntity> getFeedbackById(@PathVariable String id) {
-        FeedbackEntity feedback = feedbackService.getFeedbackById(id);
-        return new ResponseEntity<>(feedback, HttpStatus.OK);
+    public ResponseEntity<Map<String, Object>> getFeedbackById(@PathVariable String id) {
+        Map<String, Object> feedback = feedbackService.getFeedbackById(id);
+
+        if (feedback != null) {
+            return ResponseEntity.ok(feedback);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(feedback);
+        }
     }
+
 
     // Create feedback
     @PostMapping("/private/new")
-    public ResponseEntity<FeedbackEntity> createFeedback(@RequestBody FeedbackDto feedback) {
-        FeedbackEntity createdFeedback = feedbackService.createFeedback(feedback);
-        return new ResponseEntity<>(createdFeedback, HttpStatus.CREATED);
+    public ResponseEntity<Map<String, Object>> createFeedback(@RequestBody FeedbackDto feedback) {
+        Map<String, Object> creationResult = feedbackService.createFeedback(feedback);
+
+        if (creationResult.get("createdFeedback") != null) {
+            return ResponseEntity.status(HttpStatus.CREATED).body(creationResult);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(creationResult);
+        }
     }
+
 }
 

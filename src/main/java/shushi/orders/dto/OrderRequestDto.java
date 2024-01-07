@@ -11,6 +11,6 @@ import java.util.Map;
 @AllArgsConstructor
 @Builder
 @ToString
-public class OrderRequest {
+public class OrderRequestDto {
     private String userId;
 }

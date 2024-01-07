@@ -4,13 +4,14 @@ import shushi.chefs.dto.ChefDto;
 import shushi.chefs.entity.ChefEntity;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ChefService  {
-    ChefEntity getChefByName(String name);
+    Map<String, Object> getChefByName(String name);
 
-    ChefEntity getTopChef();
+    Map<String, Object> getTopChef();
 
-    List<ChefEntity> getAllChefs();
+    Map<String, Object> getAllChefs();
 
-    ChefEntity createChef(ChefDto chefDto);
+    Map<String, Object> createChef(ChefDto chefDto);
 }

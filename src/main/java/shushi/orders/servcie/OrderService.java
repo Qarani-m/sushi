@@ -1,17 +1,17 @@
 package shushi.orders.servcie;
 
-import shushi.orders.dto.OrderRequest;
+import shushi.orders.dto.OrderRequestDto;
 import shushi.orders.entity.OrderEntity;
 
 import java.util.List;
 import java.util.Map;
 
 public interface OrderService {
-    Map<String, Object> createOrder(OrderRequest orderRequest);
+    Map<String, Object> createOrder(OrderRequestDto orderRequest);
 
-    OrderEntity getOrder(String userId, String orderId);
+    Map<String, Object> getOrder(String userId, String orderId);
 
-    List<OrderEntity> getAllOrders(String userId);
+    Map<String, Object>  getAllOrders(String userId);
 
 }
 

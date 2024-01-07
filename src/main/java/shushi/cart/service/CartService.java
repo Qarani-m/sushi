@@ -5,20 +5,22 @@ import shushi.cart.dto.NewItemDto;
 import shushi.cart.entity.CartEntity;
 import shushi.cart.entity.CartItem;
 
+import java.util.Map;
+
 public interface CartService {
-    CartEntity addItemToCart(String userId, String item);
+    Map<String, Object> addItemToCart(String userId, String item);
 
-    CartEntity removeItemFromCart(String userId, String itemId);
+    Map<String, Object> removeItemFromCart(String userId, String itemId);
 
-    CartEntity getCart(String userId);
+    Map<String, Object> getCart(String userId);
 
-    void clearCart(String userId);
+    Map<String, Object> clearCart(String userId);
 
-    CartEntity createCart(NewCartDto newCartDto);
+    Map<String, Object> createCart(NewCartDto newCartDto);
 
-    int getNumberOfItemsInCart(String userId);
+    Map<String, Object> getNumberOfItemsInCart(String userId);
 
-    CartEntity increaseQuantity(String userId, String itemId);
+    Map<String, Object> increaseQuantity(String userId, String itemId);
 
-    CartEntity reduceQuantity(String userId, String itemId);
+    Map<String, Object> reduceQuantity(String userId, String itemId);
 }

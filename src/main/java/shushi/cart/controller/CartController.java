@@ -1,6 +1,7 @@
 package shushi.cart.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import shushi.cart.dto.AddItemDto;
@@ -10,6 +11,9 @@ import shushi.cart.entity.CartEntity;
 import shushi.cart.entity.CartItem;
 import shushi.cart.service.CartService;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/private/cart")
 public class CartController {
@@ -18,31 +22,54 @@ public class CartController {
     private CartService cartService;
 
     @PostMapping("/create")
-    public ResponseEntity<CartEntity> createCart(@RequestBody NewCartDto newCart) {
-        CartEntity cart = cartService.createCart(newCart);
-        return ResponseEntity.ok(cart);
+    public ResponseEntity<Map<String, Object>> createCart(@RequestBody NewCartDto newCart) {
+        Map<String, Object> cart = cartService.createCart(newCart);
+
+        if (cart != null) {
+            return ResponseEntity.ok(cart);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(cart);
+        }
     }
+
 
     // Endpoint to add an item to the cart
     @PostMapping("/addItem/{userId}")
-    public ResponseEntity<CartEntity> addItemToCart(@PathVariable String userId, @RequestBody AddItemDto itemIdDto) {
-        CartEntity updatedCart = cartService.addItemToCart(userId, itemIdDto.getItemId());
-        return ResponseEntity.ok(updatedCart);
+    public ResponseEntity<Map<String, Object>> addItemToCart(@PathVariable String userId, @RequestBody AddItemDto itemIdDto) {
+        Map<String, Object> updatedCart = cartService.addItemToCart(userId, itemIdDto.getItemId());
+
+        if (updatedCart != null) {
+            return ResponseEntity.ok(updatedCart);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(updatedCart);
+        }
     }
 
     // Endpoint to remove an item from the cart
     @PostMapping("/removeItem/{userId}")
-    public ResponseEntity<CartEntity> removeItemFromCart(@PathVariable String userId, @RequestBody AddItemDto itemIdDto) {
-        CartEntity updatedCart = cartService.removeItemFromCart(userId, itemIdDto.getItemId());
-        return ResponseEntity.ok(updatedCart);
+    public ResponseEntity<Map<String, Object>> removeItemFromCart(@PathVariable String userId, @RequestBody AddItemDto itemIdDto) {
+        Map<String, Object> updatedCart = cartService.removeItemFromCart(userId, itemIdDto.getItemId());
+
+        if (updatedCart != null) {
+            return ResponseEntity.ok(updatedCart);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(updatedCart);
+        }
     }
+
 
     // Endpoint to get the contents of the cart
     @GetMapping("/all/{userId}")
-    public ResponseEntity<CartEntity> getCart(@PathVariable String userId) {
-        CartEntity cart = cartService.getCart(userId);
-        return ResponseEntity.ok(cart);
+    public ResponseEntity<Map<String, Object>> getCart(@PathVariable String userId) {
+        Map<String, Object> cart = cartService.getCart(userId);
+
+        if (cart != null) {
+            return ResponseEntity.ok(cart);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(cart);
+        }
     }
+
 
 
     // Endpoint to clear the contents of the cart
@@ -53,22 +80,36 @@ public class CartController {
     }
 
 
+
     @GetMapping("/numberOfItems/{userId}")
-    public ResponseEntity<Integer> getNumberOfItemsInCart(@PathVariable String userId) {
-        int numberOfItems = cartService.getNumberOfItemsInCart(userId);
+    public ResponseEntity<Map<String, Object>> getNumberOfItemsInCart(@PathVariable String userId) {
+        Map<String, Object> numberOfItems = cartService.getNumberOfItemsInCart(userId);
         return ResponseEntity.ok(numberOfItems);
     }
 
+
     @PostMapping("/increaseQuantity/{userId}")
-    public ResponseEntity<CartEntity> increaseQuantity(@PathVariable String userId, @RequestBody AddItemDto addItemDto) {
-        CartEntity updatedCart = cartService.increaseQuantity(userId, addItemDto.getItemId());
-        return ResponseEntity.ok(updatedCart);
+    public ResponseEntity<Map<String, Object>> increaseQuantity(@PathVariable String userId, @RequestBody AddItemDto addItemDto) {
+        Map<String, Object> updatedCart = cartService.increaseQuantity(userId, addItemDto.getItemId());
+
+        if (updatedCart != null) {
+            return ResponseEntity.ok(updatedCart);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(updatedCart);
+        }
     }
 
+
     @PostMapping("/reduceQuantity/{userId}")
-    public ResponseEntity<CartEntity> reduceQuantity(@PathVariable String userId, @RequestBody AddItemDto addItemDto) {
-        CartEntity updatedCart = cartService.reduceQuantity(userId, addItemDto.getItemId());
-        return ResponseEntity.ok(updatedCart);
+    public ResponseEntity<Map<String, Object>> reduceQuantity(@PathVariable String userId, @RequestBody AddItemDto addItemDto) {
+        Map<String, Object> updatedCart = cartService.reduceQuantity(userId, addItemDto.getItemId());
+
+        if (updatedCart != null) {
+            return ResponseEntity.ok(updatedCart);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(updatedCart);
+        }
     }
+
 
 }

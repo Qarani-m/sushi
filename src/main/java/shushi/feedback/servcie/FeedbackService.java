@@ -4,12 +4,13 @@ import shushi.feedback.dto.FeedbackDto;
 import shushi.feedback.entity.FeedbackEntity;
 
 import java.util.List;
+import java.util.Map;
 
 public interface FeedbackService {
-    List<FeedbackEntity> getAllFeedback(String productId);
+    Map<String, Object>  getAllFeedback(String productId);
 
-    FeedbackEntity getFeedbackById(String id);
+    Map<String, Object> getFeedbackById(String id);
 
-    FeedbackEntity createFeedback(FeedbackDto feedback);
+    Map<String, Object>  createFeedback(FeedbackDto feedback);
 
 }

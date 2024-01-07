@@ -13,10 +13,7 @@ import shushi.exceptions.UserNotFoundException;
 import shushi.sushi.entity.SushiEntity;
 import shushi.sushi.repository.SushiRepository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class CartServiceImpl implements CartService {
@@ -30,10 +27,12 @@ public class CartServiceImpl implements CartService {
     @Autowired
     private SushiRepository sushiRepository;
 
+
+
     @Override
-    public CartEntity addItemToCart(String userId, String itemId) {
+    public Map<String, Object> addItemToCart(String userId, String itemId) {
         Objects.requireNonNull(userId, "UserId cannot be null");
-        Objects.requireNonNull(itemId, "CartItem cannot be null");
+        Objects.requireNonNull(itemId, "ItemId cannot be null");
 
         CartEntity cartEntity = cartRepository.findByUserId(userId);
         List<CartItem> existingItems = cartEntity.getItems();
@@ -55,57 +54,92 @@ public class CartServiceImpl implements CartService {
             cartRepository.save(cartEntity);
         }
 
-        return cartEntity;
+        Map<String, Object> response = new HashMap<>();
+        response.put("cartEntity", cartEntity);
+        response.put("message", "success");
+
+        return response;
     }
 
-
-
     @Override
-    public CartEntity removeItemFromCart(String userId, String itemId) {
+    public Map<String, Object> removeItemFromCart(String userId, String itemId) {
         Objects.requireNonNull(userId, "UserId cannot be null");
         Objects.requireNonNull(itemId, "ItemId cannot be null");
 
         CartEntity cartEntity = cartRepository.findByUserId(userId);
         List<CartItem> existingItems = cartEntity.getItems();
-        Optional<CartItem> itemToRemove = existingItems.stream()
-                .filter(cartItem -> cartItem.getSushi().getId().equals(itemId))
-                .findFirst();
-        itemToRemove.ifPresent(existingItems::remove);
+
+        existingItems.removeIf(cartItem -> cartItem.getSushi().getId().equals(itemId));
 
         cartEntity.setItems(existingItems);
+        cartRepository.save(cartEntity);
 
-        return cartRepository.save(cartEntity);
+        Map<String, Object> response = new HashMap<>();
+        response.put("cartEntity", cartEntity);
+        response.put("message", "success");
+
+        return response;
     }
 
 
 
+
+
+
+
+
     @Override
-    public CartEntity getCart(String userId) {
+    public Map<String, Object> getCart(String userId) {
         Objects.requireNonNull(userId, "UserId cannot be null");
 
+        CartEntity cartEntity = cartRepository.findByUserId(userId);
 
-        return cartRepository.findByUserId(userId);
+        Map<String, Object> response = new HashMap<>();
+
+        if (cartEntity != null && !cartEntity.getItems().isEmpty()) {
+            response.put("cart", cartEntity);
+            response.put("message", "success");
+        } else {
+            response.put("cart", null);
+            response.put("message", "Cart is empty or not found.");
+        }
+
+        return response;
     }
+
     @Override
-    public void clearCart(String userId) {
+    public Map<String, Object> clearCart(String userId) {
         Objects.requireNonNull(userId, "UserId cannot be null");
-
-
 
         CartEntity cart = cartRepository.findByUserId(userId);
+
+        Map<String, Object> response = new HashMap<>();
 
         if (cart != null) {
             cart.setItems(new ArrayList<>()); // Clear the items in the cart
             cartRepository.save(cart);
+            response.put("message", "success");
+        } else {
+            response.put("message", "Cart not found.");
         }
+
+        return response;
     }
+
     @Override
-    public CartEntity createCart(NewCartDto newCartDto) {
+    public Map<String, Object> createCart(NewCartDto newCartDto) {
         CartEntity cart = CartEntity.builder()
                 .items(new ArrayList<>())
                 .userId(newCartDto.getUserId())
                 .build();
-        return cartRepository.save(cart);
+
+        cartRepository.save(cart);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("cart", cart);
+        response.put("message", "success");
+
+        return response;
     }
 
 
@@ -114,55 +148,67 @@ public class CartServiceImpl implements CartService {
         return userRepository.findById(userId);
     }
     @Override
-    public int getNumberOfItemsInCart(String userId) {
+    public Map<String, Object> getNumberOfItemsInCart(String userId) {
         Objects.requireNonNull(userId, "UserId cannot be null");
+
         CartEntity cartEntity = cartRepository.findByUserId(userId);
 
-        if (cartEntity != null) {
-            List<CartItem> items = cartEntity.getItems();
-            return items.size();
-        } else {
-            return 0;
-        }
+        Map<String, Object> response = new HashMap<>();
+        response.put("numberOfItems", cartEntity != null ? cartEntity.getItems().size() : 0);
+        response.put("message", "success");
+
+        return response;
     }
 
 
-        public CartEntity increaseQuantity(String userId, String itemId) {
-            CartEntity cartEntity = cartRepository.findByUserId(userId);
-            List<CartItem> existingItems = cartEntity.getItems();
+    public Map<String, Object> increaseQuantity(String userId, String itemId) {
+        CartEntity cartEntity = cartRepository.findByUserId(userId);
+        List<CartItem> existingItems = cartEntity.getItems();
 
-            Optional<CartItem> itemToIncrease = existingItems.stream()
-                    .filter(cartItem -> cartItem.getSushi().getId().equals(itemId))
-                    .findFirst();
+        Optional<CartItem> itemToIncrease = existingItems.stream()
+                .filter(cartItem -> cartItem.getSushi().getId().equals(itemId))
+                .findFirst();
 
-            System.out.println(itemToIncrease);
+        itemToIncrease.ifPresent(cartItem -> cartItem.setQuantity(cartItem.getQuantity() + 1));
+
+        cartEntity.setItems(existingItems);
+        cartRepository.save(cartEntity);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("cart", cartEntity);
+        response.put("message", "success");
+
+        return response;
+    }
 
 
+    public Map<String, Object> reduceQuantity(String userId, String itemId) {
+        Objects.requireNonNull(userId, "UserId cannot be null");
+        Objects.requireNonNull(itemId, "ItemId cannot be null");
 
+        CartEntity cartEntity = cartRepository.findByUserId(userId);
+        List<CartItem> existingItems = cartEntity.getItems();
 
-            itemToIncrease.ifPresent(cartItem -> cartItem.setQuantity(cartItem.getQuantity() + 1));
+        Optional<CartItem> itemToReduce = existingItems.stream()
+                .filter(cartItem -> cartItem.getSushi().getId().equals(itemId))
+                .findFirst();
 
-            cartEntity.setItems(existingItems);
+        itemToReduce.ifPresent(cartItem -> {
+            if (cartItem.getQuantity() > 1) {
+                cartItem.setQuantity(cartItem.getQuantity() - 1);
+            } else {
+                existingItems.remove(cartItem);
+            }
+        });
 
-            return cartRepository.save(cartEntity);
-        }
+        cartEntity.setItems(existingItems);
+        cartRepository.save(cartEntity);
 
-        public CartEntity reduceQuantity(String userId, String itemId) {
-            Objects.requireNonNull(userId, "UserId cannot be null");
-            Objects.requireNonNull(itemId, "ItemId cannot be null");
-            CartEntity cartEntity = cartRepository.findByUserId(userId);
-            List<CartItem> existingItems = cartEntity.getItems();
-            Optional<CartItem> itemToReduce = existingItems.stream()
-                    .filter(cartItem -> cartItem.getSushi().getId().equals(itemId))
-                    .findFirst();
-            itemToReduce.ifPresent(cartItem -> {
-                if (cartItem.getQuantity() > 1) {
-                    cartItem.setQuantity(cartItem.getQuantity() - 1);
-                } else {
-                    existingItems.remove(cartItem);
-                }
-            });
-            cartEntity.setItems(existingItems);
-            return cartRepository.save(cartEntity);
-        }
+        Map<String, Object> response = new HashMap<>();
+        response.put("cart", cartEntity);
+        response.put("message", "success");
+
+        return response;
+    }
+
     }
