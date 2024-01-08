@@ -18,7 +18,7 @@ public class ChefController {
 
     @Autowired
     private ChefService chefService;
-    @GetMapping("/one/{chefId}")
+    @GetMapping("/public/one/{chefId}")
     public ResponseEntity<Map<String, Object>> getChef(@PathVariable String chefId) {
         Map<String, Object> chef = chefService.getChefByName(chefId);
 
@@ -30,7 +30,7 @@ public class ChefController {
     }
 
 
-    @GetMapping("/top")
+    @GetMapping("/public/top")
     public ResponseEntity<Map<String, Object>> getTopChef() {
         Map<String, Object> topChef = chefService.getTopChef();
         if (topChef != null) {
@@ -40,7 +40,7 @@ public class ChefController {
         }
     }
 
-    @GetMapping("/all")
+    @GetMapping("/public/all")
     public ResponseEntity<Map<String, Object>> getAllChefs() {
         Map<String, Object> chefs = chefService.getAllChefs();
 

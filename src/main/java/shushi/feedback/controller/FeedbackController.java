@@ -20,7 +20,7 @@ public class FeedbackController {
     @Autowired
     private FeedbackService feedbackService;
     // Get all feedback
-    @GetMapping("/all/{productId}")
+    @GetMapping("/public/all/{productId}")
     public ResponseEntity<Map<String, Object>> getAllFeedback(@PathVariable String productId) {
         Map<String, Object> feedbackResult = feedbackService.getAllFeedback(productId);
 

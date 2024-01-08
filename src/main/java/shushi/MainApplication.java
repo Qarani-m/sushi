@@ -5,10 +5,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class })
-public class ShushiApplication {
+public class MainApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ShushiApplication.class, args);
+		SpringApplication.run(MainApplication.class, args);
 	}
 
 }

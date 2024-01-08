@@ -20,7 +20,7 @@ public class ItemController {
 
 
     // Get all item items
-    @GetMapping("/all")
+    @GetMapping("/public/all")
     public ResponseEntity<Map<String, Object>> getAllSushi() {
         Map<String, Object> sushiResult = itemService.findAll();
 
@@ -32,7 +32,7 @@ public class ItemController {
     }
 
     // Get a specific item item by ID
-    @GetMapping("/one/{sushiId}")
+    @GetMapping("/public/one/{sushiId}")
     public ResponseEntity<Map<String, Object>> getSushiById(@PathVariable String sushiId) {
         Map<String, Object> sushiResult = itemService.getSushiById(sushiId);
         if (sushiResult.get("item") == null) {
@@ -43,7 +43,7 @@ public class ItemController {
     }
 
     // Update a item item by ID
-    @PutMapping("/admin/update/{sushiId}")
+    @PutMapping("/public/admin/update/{sushiId}")
     public ResponseEntity<Map<String, Object>> updateSushi(@PathVariable String sushiId, @RequestBody ItemEntity updatedSushi) {
         Map<String, Object> updateResult = itemService.updateSushi(sushiId, updatedSushi);
         if (updateResult.get("updatedSushi") == null) {
@@ -74,7 +74,7 @@ public class ItemController {
         }
     }
     // Filter item items by price range, category, and stars
-    @GetMapping("/filter")
+    @GetMapping("/public/filter")
     public ResponseEntity<Map<String, Object>> filterSushi(
             @RequestParam(required = false) Double minPrice,
             @RequestParam(required = false) Double maxPrice,
