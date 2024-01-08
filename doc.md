@@ -191,7 +191,7 @@ The base URL for the API is `/api/private/cart`.
                   "id": "6595536e2d22290bf5a2ad9a",
                   "name": "Sushi Example",
                   "price": 12.79,
-                  "description": "A delicious sushi roll example.",
+                  "description": "A delicious item roll example.",
                   "stars": 5,
                   "category": "Sushi",
                   "imageUrl": "https://example.com/sushi-example.jpg"
@@ -240,7 +240,7 @@ The base URL for the API is `/api/private/cart`.
 				"id": "6595536e2d22290bf5a2ad9a",
 				"name": "Sushi Example",
 				"price": 12.79,
-				"description": "A delicious sushi roll example.",
+				"description": "A delicious item roll example.",
 				"stars": 5,
 				"category": "Sushi",
 				"imageUrl": "https://example.com/sushi-example.jpg"
@@ -248,14 +248,14 @@ The base URL for the API is `/api/private/cart`.
 			"quantity": 1
 		},
 		{
-			"sushi": {
+			"item": {
 				"id": "6595536e2d22290bf5a2ad9a",
 				"name": "Sushi Example",
 				"price": 12.79,
-				"description": "A delicious sushi roll example.",
+				"description": "A delicious item roll example.",
 				"stars": 5,
 				"category": "Sushi",
-				"imageUrl": "https://example.com/sushi-example.jpg"
+				"imageUrl": "https://example.com/item-example.jpg"
 			},
 			"quantity": 1
 		}

@@ -3,7 +3,6 @@ package shushi.orders.servcie;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import shushi.auth.entity.UserProfile;
 import shushi.auth.repository.UserRepository;
 import shushi.cart.entity.CartEntity;
 import shushi.cart.entity.CartItem;
@@ -11,7 +10,7 @@ import shushi.cart.repository.CartRepository;
 import shushi.orders.dto.OrderRequestDto;
 import shushi.orders.entity.OrderEntity;
 import shushi.orders.repository.OrderRepository;
-import shushi.sushi.entity.SushiEntity;
+import shushi.item.entity.ItemEntity;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -37,12 +36,12 @@ public class OrderServiceImpl implements OrderService {
         double totalAmount = 0.0;
 
         for (CartItem cartItem : cartEntity.getItems()) {
-            SushiEntity sushiEntity = cartItem.getSushi();
+            ItemEntity itemEntity = cartItem.getSushi();
             int quantity = cartItem.getQuantity();
-            double totalPrice = quantity * sushiEntity.getPrice();
+            double totalPrice = quantity * itemEntity.getPrice();
             totalAmount += totalPrice;
 
-            orderItems.add(Map.of(sushiEntity.getId(), quantity));
+            orderItems.add(Map.of(itemEntity.getId(), quantity));
         }
 
         OrderEntity order = OrderEntity.builder()

@@ -1,30 +1,28 @@
-package shushi.sushi.controller;
+package shushi.item.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import shushi.sushi.dto.SushiDto;
-import shushi.sushi.entity.SushiEntity;
-import shushi.sushi.repository.SushiRepository;
-import shushi.sushi.service.SushiService;
+import shushi.item.dto.ItemDto;
+import shushi.item.entity.ItemEntity;
+import shushi.item.service.ItemService;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/sushi")
-public class SushiController {
+@RequestMapping("/api/item")
+public class ItemController {
     @Autowired
-    private SushiService sushiService;
+    private ItemService itemService;
 
 
 
-    // Get all sushi items
+    // Get all item items
     @GetMapping("/all")
     public ResponseEntity<Map<String, Object>> getAllSushi() {
-        Map<String, Object> sushiResult = sushiService.findAll();
+        Map<String, Object> sushiResult = itemService.findAll();
 
         if (sushiResult.get("sushiList") == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(sushiResult);
@@ -33,21 +31,21 @@ public class SushiController {
         }
     }
 
-    // Get a specific sushi item by ID
+    // Get a specific item item by ID
     @GetMapping("/one/{sushiId}")
     public ResponseEntity<Map<String, Object>> getSushiById(@PathVariable String sushiId) {
-        Map<String, Object> sushiResult = sushiService.getSushiById(sushiId);
-        if (sushiResult.get("sushi") == null) {
+        Map<String, Object> sushiResult = itemService.getSushiById(sushiId);
+        if (sushiResult.get("item") == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(sushiResult);
         } else {
             return ResponseEntity.ok(sushiResult);
         }
     }
 
-    // Update a sushi item by ID
+    // Update a item item by ID
     @PutMapping("/admin/update/{sushiId}")
-    public ResponseEntity<Map<String, Object>> updateSushi(@PathVariable String sushiId, @RequestBody SushiEntity updatedSushi) {
-        Map<String, Object> updateResult = sushiService.updateSushi(sushiId, updatedSushi);
+    public ResponseEntity<Map<String, Object>> updateSushi(@PathVariable String sushiId, @RequestBody ItemEntity updatedSushi) {
+        Map<String, Object> updateResult = itemService.updateSushi(sushiId, updatedSushi);
         if (updateResult.get("updatedSushi") == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(updateResult);
         } else {
@@ -55,18 +53,18 @@ public class SushiController {
         }
     }
 
-    // Create a new sushi item
+    // Create a new item item
 
     @PostMapping("/admin/create")
-    public ResponseEntity<Map<String, Object>> createSushi(@RequestBody SushiDto sushiDto) {
-        Map<String, Object> creationResult = sushiService.createSushi(sushiDto);
+    public ResponseEntity<Map<String, Object>> createSushi(@RequestBody ItemDto itemDto) {
+        Map<String, Object> creationResult = itemService.createSushi(itemDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(creationResult);
     }
-    // Delete a sushi item by ID
+    // Delete a item item by ID
 
     @DeleteMapping("/admin/delete/{sushiId}")
     public ResponseEntity<Map<String, Object>> deleteSushi(@PathVariable String sushiId) {
-        Map<String, Object> deletionResult = sushiService.deleteSushi(sushiId);
+        Map<String, Object> deletionResult = itemService.deleteSushi(sushiId);
 
         if (deletionResult.get("message").equals("Sushi entity deleted successfully.")) {
             return ResponseEntity.noContent().build();
@@ -75,7 +73,7 @@ public class SushiController {
 
         }
     }
-    // Filter sushi items by price range, category, and stars
+    // Filter item items by price range, category, and stars
     @GetMapping("/filter")
     public ResponseEntity<Map<String, Object>> filterSushi(
             @RequestParam(required = false) Double minPrice,
@@ -83,7 +81,7 @@ public class SushiController {
             @RequestParam(required = false) String category,
             @RequestParam(required = false) Integer stars) {
 
-        Map<String, Object> filterResult = sushiService.filterSushi(minPrice, maxPrice, category, stars);
+        Map<String, Object> filterResult = itemService.filterSushi(minPrice, maxPrice, category, stars);
 
         if (filterResult.get("filteredSushi") != null && !((List<?>) filterResult.get("filteredSushi")).isEmpty()) {
             return ResponseEntity.ok(filterResult);

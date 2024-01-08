@@ -1,4 +1,4 @@
-package shushi.sushi.entity;
+package shushi.item.entity;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -9,12 +9,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Document(collection = "sushi")
+@Document(collection = "item")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SushiEntity {
+public class ItemEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

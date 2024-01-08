@@ -2,16 +2,13 @@ package shushi.cart.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import shushi.auth.entity.UserProfile;
 import shushi.auth.repository.UserRepository;
 import shushi.cart.dto.NewCartDto;
-import shushi.cart.dto.NewItemDto;
 import shushi.cart.entity.CartEntity;
 import shushi.cart.entity.CartItem;
 import shushi.cart.repository.CartRepository;
-import shushi.exceptions.UserNotFoundException;
-import shushi.sushi.entity.SushiEntity;
-import shushi.sushi.repository.SushiRepository;
+import shushi.item.entity.ItemEntity;
+import shushi.item.repository.ItemRepository;
 
 import java.util.*;
 
@@ -25,7 +22,7 @@ public class CartServiceImpl implements CartService {
     private UserRepository userRepository;
 
     @Autowired
-    private SushiRepository sushiRepository;
+    private ItemRepository itemRepository;
 
 
 
@@ -44,7 +41,7 @@ public class CartServiceImpl implements CartService {
         if (existingCartItem.isPresent()) {
             increaseQuantity(userId, itemId);
         } else {
-            SushiEntity sushiItem = sushiRepository.findById(itemId).orElseThrow();
+            ItemEntity sushiItem = itemRepository.findById(itemId).orElseThrow();
             CartItem cartItem = CartItem.builder()
                     .sushi(sushiItem)
                     .quantity(1)
@@ -143,10 +140,7 @@ public class CartServiceImpl implements CartService {
     }
 
 
-    private Optional<UserProfile> findUser(String userId){
-        Objects.requireNonNull(userId, "User ID cannot be null");
-        return userRepository.findById(userId);
-    }
+
     @Override
     public Map<String, Object> getNumberOfItemsInCart(String userId) {
         Objects.requireNonNull(userId, "UserId cannot be null");

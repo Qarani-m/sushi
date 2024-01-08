@@ -1,4 +1,4 @@
-package shushi.sushi.dto;
+package shushi.item.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SushiDto {
+public class ItemDto {
     private String name;
     private double price;
     private String description;

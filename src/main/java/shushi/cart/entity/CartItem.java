@@ -4,8 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.mongodb.core.mapping.DBRef;
-import shushi.sushi.entity.SushiEntity;
+import shushi.item.entity.ItemEntity;
 
 @Data
 @NoArgsConstructor
@@ -13,7 +12,7 @@ import shushi.sushi.entity.SushiEntity;
 @Builder
 public class CartItem {
 
-    private SushiEntity sushi;
+    private ItemEntity sushi;
     private int quantity;
 }
 
